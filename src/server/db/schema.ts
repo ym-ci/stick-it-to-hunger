@@ -96,9 +96,9 @@ export const houseEnum = pgEnum("pg-drizzle_house", [
   "Thea",
 ]);
 
+// Each person (e.g. name entry) can have multiple donations
 export const donations = pgTable("donation", (d) => ({
   id: d.integer().primaryKey().generatedByDefaultAsIdentity(),
-  date: d.timestamp({ withTimezone: true }).notNull(),
   role: roleEnum("role").notNull(),
   house: houseEnum("house"),
   name: d.varchar({ length: 256 }).notNull(),
@@ -107,5 +107,4 @@ export const donations = pgTable("donation", (d) => ({
     .timestamp({ withTimezone: true })
     .$defaultFn(() => new Date())
     .notNull(),
-  updatedAt: d.timestamp({ withTimezone: true }).$onUpdate(() => new Date()),
 }));
