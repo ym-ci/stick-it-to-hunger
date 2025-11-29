@@ -2,8 +2,10 @@ import { relations } from "drizzle-orm";
 import {
   boolean,
   index,
+  pgEnum,
   pgTable,
   pgTableCreator,
+  real,
   text,
   timestamp,
 } from "drizzle-orm/pg-core";
@@ -102,4 +104,31 @@ export const accountRelations = relations(account, ({ one }) => ({
 
 export const sessionRelations = relations(session, ({ one }) => ({
   user: one(user, { fields: [session.userId], references: [user.id] }),
+}));
+
+export const roleEnum = pgEnum("pg-drizzle_role", [
+  "Student",
+  "Staff",
+  "Community",
+]);
+export const houseEnum = pgEnum("pg-drizzle_house", [
+  "Hyperion",
+  "Themis",
+  "Oceanus",
+  "Crius",
+  "Thea",
+]);
+
+export const donations = createTable("donation", (d) => ({
+  id: d.integer().primaryKey().generatedByDefaultAsIdentity(),
+  date: d.timestamp({ withTimezone: true }).notNull(),
+  role: roleEnum("role").notNull(),
+  house: houseEnum("house"),
+  name: d.varchar({ length: 256 }).notNull(),
+  amount: d.real().notNull(),
+  createdAt: d
+    .timestamp({ withTimezone: true })
+    .$defaultFn(() => new Date())
+    .notNull(),
+  updatedAt: d.timestamp({ withTimezone: true }).$onUpdate(() => new Date()),
 }));
