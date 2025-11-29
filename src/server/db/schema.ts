@@ -3,14 +3,12 @@ import {
   boolean,
   index,
   pgEnum,
+
   pgTable,
-  pgTableCreator,
   real,
   text,
   timestamp,
 } from "drizzle-orm/pg-core";
-
-export const createTable = pgTableCreator((name) => `pg-drizzle_${name}`);
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -98,7 +96,7 @@ export const houseEnum = pgEnum("pg-drizzle_house", [
   "Thea",
 ]);
 
-export const donations = createTable("donation", (d) => ({
+export const donations = pgTable("donation", (d) => ({
   id: d.integer().primaryKey().generatedByDefaultAsIdentity(),
   date: d.timestamp({ withTimezone: true }).notNull(),
   role: roleEnum("role").notNull(),
