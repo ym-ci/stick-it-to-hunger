@@ -1,79 +1,203 @@
-import { headers } from "next/headers";
-import Link from "next/link";
-import { redirect } from "next/navigation";
+"use client";
 
-import { auth } from "@/server/better-auth";
-import { getSession } from "@/server/better-auth/server";
-import { api, HydrateClient } from "@/trpc/server";
+import { Suspense } from "react";
+import { api } from "@/trpc/react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid } from "recharts";
 
-export default async function Home() {
-  const hello = await api.post.hello({ text: "from tRPC" });
-  const session = await getSession();
+function DashboardContent() {
+  const [data] = api.donation.getDashboardData.useSuspenseQuery();
 
-  if (session) {
-    void api.post.getLatest.prefetch();
-  }
+  const chartConfig = {
+    amount: {
+      label: "Donations (lbs)",
+      color: "hsl(var(--chart-1))",
+    },
+  };
 
   return (
-    <HydrateClient>
-      <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
-        <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16">
-          <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem]">
-            Create <span className="text-[hsl(280,100%,70%)]">T3</span> App
+    <main className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-red-50 p-8">
+      <div className="mx-auto max-w-7xl space-y-8">
+        {/* Header */}
+        <div className="text-center">
+          <h1 className="bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-5xl font-bold text-transparent">
+            YM Stick it to Hunger Food Drive
           </h1>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
-            <Link
-              className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 hover:bg-white/20"
-              href="https://create.t3.gg/en/usage/first-steps"
-              target="_blank"
-            >
-              <h3 className="text-2xl font-bold">First Steps →</h3>
-              <div className="text-lg">
-                Just the basics - Everything you need to know to set up your
-                database and authentication.
-              </div>
-            </Link>
-            <Link
-              className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 hover:bg-white/20"
-              href="https://create.t3.gg/en/introduction"
-              target="_blank"
-            >
-              <h3 className="text-2xl font-bold">Documentation →</h3>
-              <div className="text-lg">
-                Learn more about Create T3 App, the libraries it uses, and how
-                to deploy it.
-              </div>
-            </Link>
-          </div>
-          <div className="flex flex-col items-center gap-2">
-            <p className="text-2xl text-white">
-              {hello ? hello.greeting : "Loading tRPC query..."}
-            </p>
-
-            <div className="flex flex-col items-center justify-center gap-4">
-              <p className="text-center text-2xl text-white">
-                {session && <span>Logged in as {session.user?.name}</span>}
-              </p>
-
-                <form>
-                  <button
-                    className="rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20"
-                    formAction={async () => {
-                      "use server";
-                      await auth.api.signOut({
-                        headers: await headers(),
-                      });
-                      redirect("/");
-                    }}
-                  >
-                    Sign out
-                  </button>
-                </form>
-
-            </div>
-          </div>
+          <p className="mt-2 text-xl text-gray-600">Dashboard</p>
         </div>
-      </main>
-    </HydrateClient>
+
+        {/* Summary Cards */}
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          <Card className="border-orange-200 bg-gradient-to-br from-white to-orange-50">
+            <CardHeader>
+              <CardTitle className="text-orange-900">Total Amount Donated</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-4xl font-bold text-orange-600">
+                {data.totalAmount.toFixed(1)} lbs
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="border-red-200 bg-gradient-to-br from-white to-red-50">
+            <CardHeader>
+              <CardTitle className="text-red-900">Total Number of Students</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-4xl font-bold text-red-600">{data.totalStudents}</p>
+            </CardContent>
+          </Card>
+
+          <Card className="border-amber-200 bg-gradient-to-br from-white to-amber-50">
+            <CardHeader>
+              <CardTitle className="text-amber-900">Amount Donated by Staff</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-4xl font-bold text-amber-600">
+                {data.staffAmount.toFixed(1)} lbs
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="border-orange-200 bg-gradient-to-br from-white to-orange-50">
+            <CardHeader>
+              <CardTitle className="text-orange-900">Amount Donated by Students</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-4xl font-bold text-orange-600">
+                {data.studentAmount.toFixed(1)} lbs
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Tables */}
+        <div className="grid gap-6 lg:grid-cols-2">
+          <Card className="border-orange-200">
+            <CardHeader>
+              <CardTitle className="text-orange-900">Food Donated by Each House</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>House Name</TableHead>
+                    <TableHead className="text-right">Donations (kg)</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {data.houseDonations.map((house) => (
+                    <TableRow key={house.house}>
+                      <TableCell className="font-medium">{house.house}</TableCell>
+                      <TableCell className="text-right">
+                        {house.amount.toFixed(1)}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+
+          <Card className="border-red-200">
+            <CardHeader>
+              <CardTitle className="text-red-900">Top 5 Donors</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Place</TableHead>
+                    <TableHead>Name</TableHead>
+                    <TableHead className="text-right">Donations (lbs)</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {data.topDonors.map((donor, idx) => (
+                    <TableRow key={donor.name}>
+                      <TableCell className="font-bold text-orange-600">
+                        {idx + 1}
+                        {idx === 0 ? "st" : idx === 1 ? "nd" : idx === 2 ? "rd" : "th"}
+                      </TableCell>
+                      <TableCell className="font-medium">{donor.name}</TableCell>
+                      <TableCell className="text-right">
+                        {donor.amount.toFixed(1)}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Timeline Chart */}
+        <Card className="border-orange-200">
+          <CardHeader>
+            <CardTitle className="text-orange-900">Donation Timeline</CardTitle>
+            <CardDescription>Total weight of donations over time</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ChartContainer config={chartConfig} className="h-[400px] w-full">
+              <LineChart
+                data={data.timeline}
+                margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" className="stroke-orange-200" />
+                <XAxis
+                  dataKey="date"
+                  tickFormatter={(value) => {
+                    const date = new Date(value);
+                    return `${date.getMonth() + 1}-${date.getDate()}`;
+                  }}
+                />
+                <YAxis label={{ value: "Donations (kg)", angle: -90, position: "insideLeft" }} />
+                <ChartTooltip content={<ChartTooltipContent />} />
+                <Line
+                  type="monotone"
+                  dataKey="amount"
+                  stroke="hsl(var(--chart-1))"
+                  strokeWidth={3}
+                  dot={{ fill: "hsl(var(--chart-1))", r: 6 }}
+                />
+              </LineChart>
+            </ChartContainer>
+          </CardContent>
+        </Card>
+      </div>
+    </main>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center">
+          <div className="text-2xl font-semibold text-orange-600">Loading dashboard...</div>
+        </div>
+      }
+    >
+      <DashboardContent />
+    </Suspense>
   );
 }

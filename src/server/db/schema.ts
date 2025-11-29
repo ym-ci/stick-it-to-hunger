@@ -108,3 +108,12 @@ export const donations = pgTable("donation", (d) => ({
     .$defaultFn(() => new Date())
     .notNull(),
 }));
+
+export const donationAggregates = pgTable("donation_aggregate", (t) => ({
+  id: t.integer().primaryKey().generatedByDefaultAsIdentity(),
+  totalAmount: t.real().notNull().default(0),
+  updatedAt: t
+    .timestamp({ withTimezone: true })
+    .$defaultFn(() => new Date())
+    .notNull(),
+}));
