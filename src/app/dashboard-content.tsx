@@ -27,8 +27,8 @@ export default function DashboardContent() {
   );
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-red-50 p-4 md:p-8">
-      <div className="mx-auto max-w-7xl space-y-8">
+    <main className="flex min-h-screen flex-col items-center bg-gradient-to-br from-orange-50 via-white to-red-50 p-4 md:p-8">
+      <div className="w-full max-w-[1600px] min-w-[320px] space-y-8">
         {/* Header */}
         <div className="text-center">
           <h1 className="bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-3xl font-bold text-transparent md:text-5xl">
