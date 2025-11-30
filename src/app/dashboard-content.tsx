@@ -76,7 +76,7 @@ export default function DashboardContent() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Rank</TableHead>
+                    <TableHead>Place</TableHead>
                     <TableHead>House Name</TableHead>
                     <TableHead className="text-right">
                       Donations (lbs)
@@ -88,6 +88,13 @@ export default function DashboardContent() {
                     <TableRow key={house.house}>
                       <TableCell className="font-bold text-orange-600">
                         {idx + 1}
+                        {idx === 0
+                          ? "st"
+                          : idx === 1
+                            ? "nd"
+                            : idx === 2
+                              ? "rd"
+                              : "th"}
                       </TableCell>
                       <TableCell className="font-medium">
                         {house.house}
@@ -200,7 +207,6 @@ export default function DashboardContent() {
             </CardContent>
           </Card>
         </div>
-
       </div>
     </main>
   );
