@@ -6,11 +6,15 @@ import { sql, eq, desc } from "drizzle-orm";
 export async function recalculateAggregates() {
     console.log("Recalculating aggregates...");
 
+        // Convert kg to lbs
+    const KG_TO_LBS = 2.20462;
+    const convertKgToLbs = (kg: number) => Math.round(kg * KG_TO_LBS * 100) / 100;
+
     // Calculate all statistics
     const totalResult = await db
         .select({ total: sql<number>`sum(${donations.amount})` })
         .from(donations);
-    const totalAmount = totalResult[0]?.total ?? 0;
+    const totalAmount = convertKgToLbs(totalResult[0]?.total ?? 0);
 
     const studentCountResult = await db
         .select({ count: sql<number>`count(distinct ${donations.name})` })
@@ -22,13 +26,13 @@ export async function recalculateAggregates() {
         .select({ total: sql<number>`sum(${donations.amount})` })
         .from(donations)
         .where(eq(donations.role, "Staff"));
-    const staffAmount = staffAmountResult[0]?.total ?? 0;
+    const staffAmount = convertKgToLbs(staffAmountResult[0]?.total ?? 0);
 
     const studentAmountResult = await db
         .select({ total: sql<number>`sum(${donations.amount})` })
         .from(donations)
         .where(eq(donations.role, "Student"));
-    const studentAmount = studentAmountResult[0]?.total ?? 0;
+    const studentAmount = convertKgToLbs(studentAmountResult[0]?.total ?? 0);
 
     const houseDonations = await db
         .select({
@@ -57,8 +61,8 @@ export async function recalculateAggregates() {
         totalStudents,
         staffAmount,
         studentAmount,
-        houseDonations: houseDonations.map((h) => ({ house: h.house!, amount: h.amount })),
-        topDonors: topDonors.map((d) => ({ name: d.name, amount: d.amount })),
+        houseDonations: houseDonations.map((h) => ({ house: h.house!, amount: convertKgToLbs(h.amount) })),
+        topDonors: topDonors.map((d) => ({ name: d.name, amount: convertKgToLbs(d.amount) })),
     });
 
     console.log("Aggregates recalculated!");

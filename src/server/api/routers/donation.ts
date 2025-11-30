@@ -2,8 +2,23 @@ import { z } from "zod";
 import { createTRPCRouter, publicProcedure, protectedProcedure } from "@/server/api/trpc";
 import { donations } from "@/server/db/schema";
 import { recalculateAggregates } from "@/server/db/recalculate-aggregates";
+import { ilike } from "drizzle-orm";
 
 export const donationRouter = createTRPCRouter({
+    searchDonors: protectedProcedure
+        .input(z.object({ query: z.string() }))
+        .query(async ({ ctx, input }) => {
+            if (input.query.length < 2) return [];
+            
+            const results = await ctx.db
+                .selectDistinct({ name: donations.name })
+                .from(donations)
+                .where(ilike(donations.name, `%${input.query}%`))
+                .limit(5);
+                
+            return results.map(r => r.name);
+        }),
+
     create: protectedProcedure
         .input(
             z.object({
