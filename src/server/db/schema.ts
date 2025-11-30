@@ -3,7 +3,6 @@ import {
   boolean,
   index,
   pgEnum,
-
   pgTable,
   real,
   text,
@@ -116,8 +115,16 @@ export const donationAggregates = pgTable("donation_aggregate", (t) => ({
   staffAmount: t.real().notNull().default(0),
   studentAmount: t.real().notNull().default(0),
   // Store complex data as JSON
-  houseDonations: t.json().$type<Array<{ house: string; amount: number }>>().notNull().default([]),
-  topDonors: t.json().$type<Array<{ name: string; amount: number }>>().notNull().default([]),
+  houseDonations: t
+    .json()
+    .$type<Array<{ house: string; amount: number }>>()
+    .notNull()
+    .default([]),
+  topDonors: t
+    .json()
+    .$type<Array<{ name: string; amount: number }>>()
+    .notNull()
+    .default([]),
   updatedAt: t
     .timestamp({ withTimezone: true })
     .$defaultFn(() => new Date())
