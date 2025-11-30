@@ -1,10 +1,10 @@
 import { z } from "zod";
-import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
-import { donations, donationAggregates } from "@/server/db/schema";
-import { sql, eq, desc } from "drizzle-orm";
+import { createTRPCRouter, publicProcedure, protectedProcedure } from "@/server/api/trpc";
+import { donations } from "@/server/db/schema";
+import { recalculateAggregates } from "@/server/db/recalculate-aggregates";
 
 export const donationRouter = createTRPCRouter({
-    create: publicProcedure
+    create: protectedProcedure
         .input(
             z.object({
                 name: z.string().min(1),
@@ -22,92 +22,40 @@ export const donationRouter = createTRPCRouter({
                 role: input.role,
             });
 
-            // 2. Recalculate total
-            const result = await ctx.db
-                .select({ total: sql<number>`sum(${donations.amount})` })
-                .from(donations);
+            // 2. Recalculate all statistics
+            const stats = await recalculateAggregates();
 
-            const total = result[0]?.total ?? 0;
-
-            // 3. Update aggregate table
-            // We'll just clear and re-insert to ensure single row for simplicity, 
-            // or update if we had a fixed ID. Since we used identity, let's just 
-            // keep one row.
-            // eslint-disable-next-line drizzle/enforce-delete-with-where
-            await ctx.db.delete(donationAggregates);
-            await ctx.db.insert(donationAggregates).values({
-                totalAmount: total
-            });
-
-            return { success: true, total };
+            return { success: true, totalAmount: stats.totalAmount };
         }),
 
+    recalculate: protectedProcedure.mutation(async () => {
+        const stats = await recalculateAggregates();
+        return { success: true, stats };
+    }),
+
     getDashboardData: publicProcedure.query(async ({ ctx }) => {
-        // 1. Get Total Amount from Aggregate
+        // Get all data from the aggregate table
         const aggregate = await ctx.db.query.donationAggregates.findFirst();
-        const totalAmount = aggregate?.totalAmount ?? 0;
 
-        // 2. Get Total Students (distinct names with role Student)
-        const studentCountResult = await ctx.db
-            .select({ count: sql<number>`count(distinct ${donations.name})` })
-            .from(donations)
-            .where(eq(donations.role, "Student"));
-        const totalStudents = studentCountResult[0]?.count ?? 0;
-
-        // 3. Amount by Staff
-        const staffAmountResult = await ctx.db
-            .select({ total: sql<number>`sum(${donations.amount})` })
-            .from(donations)
-            .where(eq(donations.role, "Staff"));
-        const staffAmount = staffAmountResult[0]?.total ?? 0;
-
-        // 4. Amount by Students
-        const studentAmountResult = await ctx.db
-            .select({ total: sql<number>`sum(${donations.amount})` })
-            .from(donations)
-            .where(eq(donations.role, "Student"));
-        const studentAmount = studentAmountResult[0]?.total ?? 0;
-
-        // 5. Food Donated by Each House
-        const houseDonations = await ctx.db
-            .select({
-                house: donations.house,
-                amount: sql<number>`sum(${donations.amount})`,
-            })
-            .from(donations)
-            .where(sql`${donations.house} IS NOT NULL`)
-            .groupBy(donations.house);
-
-        // 6. Top 5 Donors
-        const topDonors = await ctx.db
-            .select({
-                name: donations.name,
-                amount: sql<number>`sum(${donations.amount})`,
-            })
-            .from(donations)
-            .groupBy(donations.name)
-            .orderBy(desc(sql`sum(${donations.amount})`))
-            .limit(5);
-
-        // 7. Timeline
-        // Group by date (YYYY-MM-DD)
-        const timeline = await ctx.db
-            .select({
-                date: sql<string>`to_char(${donations.createdAt}, 'YYYY-MM-DD')`,
-                amount: sql<number>`sum(${donations.amount})`,
-            })
-            .from(donations)
-            .groupBy(sql`to_char(${donations.createdAt}, 'YYYY-MM-DD')`)
-            .orderBy(sql`to_char(${donations.createdAt}, 'YYYY-MM-DD')`);
+        if (!aggregate) {
+            // Return empty data if no aggregates exist yet
+            return {
+                totalAmount: 0,
+                totalStudents: 0,
+                staffAmount: 0,
+                studentAmount: 0,
+                houseDonations: [],
+                topDonors: [],
+            };
+        }
 
         return {
-            totalAmount,
-            totalStudents,
-            staffAmount,
-            studentAmount,
-            houseDonations,
-            topDonors,
-            timeline,
+            totalAmount: aggregate.totalAmount,
+            totalStudents: aggregate.totalStudents,
+            staffAmount: aggregate.staffAmount,
+            studentAmount: aggregate.studentAmount,
+            houseDonations: aggregate.houseDonations as Array<{ house: string; amount: number }>,
+            topDonors: aggregate.topDonors as Array<{ name: string; amount: number }>,
         };
     }),
 });

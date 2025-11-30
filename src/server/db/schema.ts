@@ -112,6 +112,12 @@ export const donations = pgTable("donation", (d) => ({
 export const donationAggregates = pgTable("donation_aggregate", (t) => ({
   id: t.integer().primaryKey().generatedByDefaultAsIdentity(),
   totalAmount: t.real().notNull().default(0),
+  totalStudents: t.integer().notNull().default(0),
+  staffAmount: t.real().notNull().default(0),
+  studentAmount: t.real().notNull().default(0),
+  // Store complex data as JSON
+  houseDonations: t.json().$type<Array<{ house: string; amount: number }>>().notNull().default([]),
+  topDonors: t.json().$type<Array<{ name: string; amount: number }>>().notNull().default([]),
   updatedAt: t
     .timestamp({ withTimezone: true })
     .$defaultFn(() => new Date())

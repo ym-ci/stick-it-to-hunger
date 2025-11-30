@@ -17,22 +17,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid } from "recharts";
+import { Progress } from "@/components/ui/progress";
 
 function DashboardContent() {
   const [data] = api.donation.getDashboardData.useSuspenseQuery();
 
-  const chartConfig = {
-    amount: {
-      label: "Donations (lbs)",
-      color: "hsl(var(--chart-1))",
-    },
-  };
+  const donationGoal = 750;
+  const progressPercentage = Math.min((data.totalAmount / donationGoal) * 100, 100);
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-red-50 p-8">
@@ -150,37 +141,23 @@ function DashboardContent() {
           </Card>
         </div>
 
-        {/* Timeline Chart */}
+        {/* Progress Bar */}
         <Card className="border-orange-200">
           <CardHeader>
-            <CardTitle className="text-orange-900">Donation Timeline</CardTitle>
-            <CardDescription>Total weight of donations over time</CardDescription>
+            <CardTitle className="text-orange-900">Donation Goal Progress</CardTitle>
+            <CardDescription>
+              {data.totalAmount.toFixed(1)} lbs of {donationGoal} lbs goal ({progressPercentage.toFixed(1)}%)
+            </CardDescription>
           </CardHeader>
-          <CardContent>
-            <ChartContainer config={chartConfig} className="h-[400px] w-full">
-              <LineChart
-                data={data.timeline}
-                margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" className="stroke-orange-200" />
-                <XAxis
-                  dataKey="date"
-                  tickFormatter={(value) => {
-                    const date = new Date(value);
-                    return `${date.getMonth() + 1}-${date.getDate()}`;
-                  }}
-                />
-                <YAxis label={{ value: "Donations (kg)", angle: -90, position: "insideLeft" }} />
-                <ChartTooltip content={<ChartTooltipContent />} />
-                <Line
-                  type="monotone"
-                  dataKey="amount"
-                  stroke="hsl(var(--chart-1))"
-                  strokeWidth={3}
-                  dot={{ fill: "hsl(var(--chart-1))", r: 6 }}
-                />
-              </LineChart>
-            </ChartContainer>
+          <CardContent className="space-y-4">
+            <Progress value={progressPercentage} className="h-8" />
+            <div className="flex justify-between text-sm text-gray-600">
+              <span>0 lbs</span>
+              <span className="font-semibold text-orange-600">
+                {(donationGoal - data.totalAmount).toFixed(1)} lbs remaining
+              </span>
+              <span>{donationGoal} lbs</span>
+            </div>
           </CardContent>
         </Card>
       </div>
