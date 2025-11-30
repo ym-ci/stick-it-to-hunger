@@ -27,18 +27,46 @@ export default function DashboardContent() {
   );
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-red-50 p-8">
+    <main className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-red-50 p-4 md:p-8">
       <div className="mx-auto max-w-7xl space-y-8">
         {/* Header */}
         <div className="text-center">
-          <h1 className="bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-5xl font-bold text-transparent">
+          <h1 className="bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-3xl font-bold text-transparent md:text-5xl">
             YM Stick it to Hunger Food Drive
           </h1>
-          <p className="mt-2 text-xl text-gray-600">Dashboard</p>
+          <p className="mt-2 text-lg text-gray-600 md:text-xl">Dashboard</p>
         </div>
 
+        {/* Progress Bar */}
+        <Card className="border-orange-200">
+          <CardHeader>
+            <CardTitle className="text-orange-900">
+              Donation Goal Progress
+            </CardTitle>
+            <CardDescription>
+              {data.totalAmount.toFixed(1)} lbs of {donationGoal} lbs goal (
+              {progressPercentage.toFixed(1)}%)
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="h-8 w-full overflow-hidden rounded-full border border-orange-200 bg-orange-100">
+              <div
+                className="h-full bg-gradient-to-r from-orange-500 to-red-600 transition-all duration-1000 ease-out"
+                style={{ width: `${progressPercentage}%` }}
+              />
+            </div>
+            <div className="flex justify-between text-xs text-gray-600 md:text-sm">
+              <span>0 lbs</span>
+              <span className="font-semibold text-orange-600">
+                {(donationGoal - data.totalAmount).toFixed(1)} lbs remaining
+              </span>
+              <span>{donationGoal} lbs</span>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Summary Cards */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-2 md:gap-6 lg:grid-cols-4">
           <Card className="border-orange-200 bg-gradient-to-br from-white to-orange-50">
             <CardHeader>
               <CardTitle className="text-orange-900">
@@ -46,7 +74,7 @@ export default function DashboardContent() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-4xl font-bold text-orange-600">
+              <p className="text-3xl font-bold text-orange-600 md:text-4xl">
                 {data.totalAmount.toFixed(1)} lbs
               </p>
             </CardContent>
@@ -59,7 +87,7 @@ export default function DashboardContent() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-4xl font-bold text-red-600">
+              <p className="text-3xl font-bold text-red-600 md:text-4xl">
                 {data.totalStudents}
               </p>
             </CardContent>
@@ -72,7 +100,7 @@ export default function DashboardContent() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-4xl font-bold text-amber-600">
+              <p className="text-3xl font-bold text-amber-600 md:text-4xl">
                 {data.staffAmount.toFixed(1)} lbs
               </p>
             </CardContent>
@@ -85,7 +113,7 @@ export default function DashboardContent() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-4xl font-bold text-orange-600">
+              <p className="text-3xl font-bold text-orange-600 md:text-4xl">
                 {data.studentAmount.toFixed(1)} lbs
               </p>
             </CardContent>
@@ -93,7 +121,7 @@ export default function DashboardContent() {
         </div>
 
         {/* Tables */}
-        <div className="grid gap-6 lg:grid-cols-2">
+        <div className="grid gap-4 md:gap-6 lg:grid-cols-2">
           <Card className="border-orange-200">
             <CardHeader>
               <CardTitle className="text-orange-900">
@@ -169,34 +197,6 @@ export default function DashboardContent() {
             </CardContent>
           </Card>
         </div>
-
-        {/* Progress Bar */}
-        <Card className="border-orange-200">
-          <CardHeader>
-            <CardTitle className="text-orange-900">
-              Donation Goal Progress
-            </CardTitle>
-            <CardDescription>
-              {data.totalAmount.toFixed(1)} lbs of {donationGoal} lbs goal (
-              {progressPercentage.toFixed(1)}%)
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="h-8 w-full overflow-hidden rounded-full border border-orange-200 bg-orange-100">
-              <div
-                className="h-full bg-gradient-to-r from-orange-500 to-red-600 transition-all duration-1000 ease-out"
-                style={{ width: `${progressPercentage}%` }}
-              />
-            </div>
-            <div className="flex justify-between text-sm text-gray-600">
-              <span>0 lbs</span>
-              <span className="font-semibold text-orange-600">
-                {(donationGoal - data.totalAmount).toFixed(1)} lbs remaining
-              </span>
-              <span>{donationGoal} lbs</span>
-            </div>
-          </CardContent>
-        </Card>
       </div>
     </main>
   );

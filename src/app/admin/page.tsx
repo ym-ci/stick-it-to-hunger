@@ -82,9 +82,9 @@ export default function AdminPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 p-8">
+    <main className="min-h-screen bg-gray-50 p-4 md:p-8">
       <div className="mx-auto max-w-4xl space-y-8">
-        <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
+        <h1 className="text-2xl font-bold text-gray-900 md:text-3xl">Admin Dashboard</h1>
 
         <Card>
           <CardHeader>
