@@ -64,62 +64,6 @@ export default function DashboardContent() {
             </div>
           </CardContent>
         </Card>
-
-        {/* Summary Cards */}
-        <div className="grid gap-4 md:grid-cols-2 md:gap-6 lg:grid-cols-4">
-          <Card className="border-orange-200 bg-gradient-to-br from-white to-orange-50">
-            <CardHeader>
-              <CardTitle className="text-orange-900">
-                Total Amount Donated
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold text-orange-600 md:text-4xl">
-                {data.totalAmount.toFixed(1)} lbs
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="border-red-200 bg-gradient-to-br from-white to-red-50">
-            <CardHeader>
-              <CardTitle className="text-red-900">
-                Total Number of Students
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold text-red-600 md:text-4xl">
-                {data.totalStudents}
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="border-amber-200 bg-gradient-to-br from-white to-amber-50">
-            <CardHeader>
-              <CardTitle className="text-amber-900">
-                Amount Donated by Staff
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold text-amber-600 md:text-4xl">
-                {data.staffAmount.toFixed(1)} lbs
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="border-orange-200 bg-gradient-to-br from-white to-orange-50">
-            <CardHeader>
-              <CardTitle className="text-orange-900">
-                Amount Donated by Students
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold text-orange-600 md:text-4xl">
-                {data.studentAmount.toFixed(1)} lbs
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-
         {/* Tables */}
         <div className="grid gap-4 md:gap-6 lg:grid-cols-2">
           <Card className="border-orange-200">
@@ -197,6 +141,62 @@ export default function DashboardContent() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Summary Cards */}
+        <div className="grid gap-4 md:grid-cols-2 md:gap-6 lg:grid-cols-4">
+          <Card className="border-orange-200 bg-gradient-to-br from-white to-orange-50">
+            <CardHeader>
+              <CardTitle className="text-orange-900">
+                Total Amount Donated
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-3xl font-bold text-orange-600 md:text-4xl">
+                {data.totalAmount.toFixed(1)} lbs
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="border-red-200 bg-gradient-to-br from-white to-red-50">
+            <CardHeader>
+              <CardTitle className="text-red-900">
+                Total Number of Students
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-3xl font-bold text-red-600 md:text-4xl">
+                {data.totalStudents}
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="border-amber-200 bg-gradient-to-br from-white to-amber-50">
+            <CardHeader>
+              <CardTitle className="text-amber-900">
+                Amount Donated by Staff
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-3xl font-bold text-amber-600 md:text-4xl">
+                {data.staffAmount.toFixed(1)} lbs
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="border-orange-200 bg-gradient-to-br from-white to-orange-50">
+            <CardHeader>
+              <CardTitle className="text-orange-900">
+                Amount Donated by Students
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-3xl font-bold text-orange-600 md:text-4xl">
+                {data.studentAmount.toFixed(1)} lbs
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+
       </div>
     </main>
   );
