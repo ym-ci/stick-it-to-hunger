@@ -6,6 +6,9 @@ import { authClient } from "@/server/better-auth/client";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
+export const dynamic = 'force-dynamic';
+
+
 export default function AdminPage() {
   const router = useRouter();
   const { data: session, isPending: isSessionPending } =
