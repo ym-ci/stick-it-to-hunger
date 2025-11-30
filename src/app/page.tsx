@@ -17,7 +17,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Progress } from "@/components/ui/progress";
 
 function DashboardContent() {
   const [data] = api.donation.getDashboardData.useSuspenseQuery();
@@ -92,7 +91,7 @@ function DashboardContent() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>House Name</TableHead>
-                    <TableHead className="text-right">Donations (kg)</TableHead>
+                    <TableHead className="text-right">Donations (lbs)</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -111,7 +110,7 @@ function DashboardContent() {
 
           <Card className="border-red-200">
             <CardHeader>
-              <CardTitle className="text-red-900">Top 5 Donors</CardTitle>
+              <CardTitle className="text-red-900">Top 5 Student Donors</CardTitle>
             </CardHeader>
             <CardContent>
               <Table>
@@ -150,7 +149,12 @@ function DashboardContent() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <Progress value={progressPercentage} className="h-8" />
+            <div className="h-8 w-full overflow-hidden rounded-full bg-orange-100 border border-orange-200">
+              <div
+                className="h-full bg-gradient-to-r from-orange-500 to-red-600 transition-all duration-1000 ease-out"
+                style={{ width: `${progressPercentage}%` }}
+              />
+            </div>
             <div className="flex justify-between text-sm text-gray-600">
               <span>0 lbs</span>
               <span className="font-semibold text-orange-600">

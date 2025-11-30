@@ -43,12 +43,14 @@ export async function recalculateAggregates() {
         .where(sql`${donations.house} IS NOT NULL`)
         .groupBy(donations.house);
 
+        // filter to only student donors
     const topDonors = await db
         .select({
             name: donations.name,
             amount: sql<number>`sum(${donations.amount})`,
         })
         .from(donations)
+        .where(eq(donations.role, "Student"))
         .groupBy(donations.name)
         .orderBy(desc(sql`sum(${donations.amount})`))
         .limit(5);

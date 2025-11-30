@@ -43,10 +43,11 @@ export const donationRouter = createTRPCRouter({
             return { success: true, totalAmount: stats.totalAmount };
         }),
 
-    recalculate: protectedProcedure.mutation(async () => {
-        const stats = await recalculateAggregates();
-        return { success: true, stats };
-    }),
+    recalculate: protectedProcedure
+        .mutation(async () => {
+            const stats = await recalculateAggregates();
+            return { success: true, stats };
+        }),
 
     getDashboardData: publicProcedure.query(async ({ ctx }) => {
         // Get all data from the aggregate table
