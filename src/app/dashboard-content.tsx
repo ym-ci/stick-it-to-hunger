@@ -76,6 +76,7 @@ export default function DashboardContent() {
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead>Rank</TableHead>
                     <TableHead>House Name</TableHead>
                     <TableHead className="text-right">
                       Donations (lbs)
@@ -83,8 +84,11 @@ export default function DashboardContent() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {data.houseDonations.map((house) => (
+                  {data.houseDonations.map((house, idx) => (
                     <TableRow key={house.house}>
+                      <TableCell className="font-bold text-orange-600">
+                        {idx + 1}
+                      </TableCell>
                       <TableCell className="font-medium">
                         {house.house}
                       </TableCell>

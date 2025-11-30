@@ -46,10 +46,12 @@ export async function recalculateAggregates() {
   const allHouses = ["Hyperion", "Themis", "Oceanus", "Crius", "Thea"] as const;
   const houseMap = new Map(houseDonations.map((h) => [h.house, h.amount]));
 
-  const completeHouseDonations = allHouses.map((house) => ({
-    house,
-    amount: convertKgToLbs(houseMap.get(house) ?? 0),
-  }));
+  const completeHouseDonations = allHouses
+    .map((house) => ({
+      house,
+      amount: convertKgToLbs(houseMap.get(house) ?? 0),
+    }))
+    .sort((a, b) => b.amount - a.amount);
 
   // filter to only student donors
   const topDonors = await db
