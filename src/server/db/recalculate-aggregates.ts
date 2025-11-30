@@ -43,6 +43,14 @@ export async function recalculateAggregates() {
     .where(sql`${donations.house} IS NOT NULL`)
     .groupBy(donations.house);
 
+  const allHouses = ["Hyperion", "Themis", "Oceanus", "Crius", "Thea"] as const;
+  const houseMap = new Map(houseDonations.map((h) => [h.house, h.amount]));
+
+  const completeHouseDonations = allHouses.map((house) => ({
+    house,
+    amount: convertKgToLbs(houseMap.get(house) ?? 0),
+  }));
+
   // filter to only student donors
   const topDonors = await db
     .select({
@@ -63,10 +71,7 @@ export async function recalculateAggregates() {
     totalStudents,
     staffAmount,
     studentAmount,
-    houseDonations: houseDonations.map((h) => ({
-      house: h.house!,
-      amount: convertKgToLbs(h.amount),
-    })),
+    houseDonations: completeHouseDonations,
     topDonors: topDonors.map((d) => ({
       name: d.name,
       amount: convertKgToLbs(d.amount),
