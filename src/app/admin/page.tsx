@@ -126,8 +126,6 @@ export default function AdminPage() {
                   <input
                     id="amount"
                     type="number"
-                    step="0.1"
-                    min="0.1"
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
                     required
